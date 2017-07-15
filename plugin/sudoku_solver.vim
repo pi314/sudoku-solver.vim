@@ -119,11 +119,13 @@ endfunction
 
 
 function! s:init ()
-    " if bufname('%') == '' && &modified == 0 && line('$') == 1 && getline(1) == ''
-    " else
-    "     tabedit
-    " endif
+    if &filetype == 'sudoku_solver'
+    elseif (bufname('%') == '' && &modified == 0 && line('$') == 1 && getline(1) == '')
+    else
+        tabedit
+    endif
     set buftype=nofile
+    set filetype=sudoku_solver
 
     let s:sudoku_ary = []
     for l:row in range(9)

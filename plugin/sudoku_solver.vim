@@ -17,7 +17,7 @@ function! s:init ()
     set buftype=nofile
     set filetype=sudoku_solver
 
-    call SudokuSolver#Solver#init()
+    call SudokuSolver#Sudoku#init()
     call SudokuSolver#GUI#init()
 
     call SudokuSolver#Canvus#canvas_clear()

@@ -56,6 +56,6 @@ endfunction
 
 
 function! SudokuSolver#GUI#set_number (num)
-    call SudokuSolver#Solver#set_number(s:row, s:col, a:num)
+    call SudokuSolver#Sudoku#set_number(s:row, s:col, a:num)
     call SudokuSolver#Canvus#draw_number(s:row, s:col)
 endfunction

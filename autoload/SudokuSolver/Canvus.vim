@@ -24,7 +24,7 @@ endfunction
 
 
 function! SudokuSolver#Canvus#draw_number (row, col)
-    let l:val = SudokuSolver#Solver#array(a:row, a:col)
+    let l:val = SudokuSolver#Sudoku#array(a:row, a:col)
     let l:cvs_row = (a:row + 1) * 2
     let l:cvs_col = (a:col + 1) * 4 + (a:col > 2 ? 1 : 0) + (a:col > 5 ? 1 : 0)
 
@@ -59,7 +59,7 @@ endfunction
 
 
 function! SudokuSolver#Canvus#draw_cursor (row, col)
-    let l:val = SudokuSolver#Solver#array(a:row, a:col)
+    let l:val = SudokuSolver#Sudoku#array(a:row, a:col)
     let l:cvs_row = (a:row + 1) * 2
     let l:cvs_col = (a:col + 1) * 4 + (a:col > 2 ? 1 : 0) + (a:col > 5 ? 1 : 0)
 

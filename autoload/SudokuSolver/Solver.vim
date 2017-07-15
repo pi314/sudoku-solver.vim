@@ -7,13 +7,22 @@ function! s:sum (list)
 endfunction
 
 
+function! s:line_solver (line)
+    let l:sum = s:sum(a:line)
+    let l:zero_idx = index(a:line, 0)
+    if l:sum >= 36 && l:zero_idx >= 0
+        return [l:zero_idx, 45 - l:sum]
+    endif
+    return []
+endfunction
+
+
 function! SudokuSolver#Solver#RowSolver (ary)
     let l:results = []
     for l:row in range(9)
-        let l:sum = s:sum(a:ary[(l:row)])
-        if l:sum >= 36
-            let l:zero_col = index(a:ary[(l:row)], 0)
-            call add(l:results, [l:row, l:zero_col, 45 - l:sum])
+        let l:res = s:line_solver(a:ary[(l:row)])
+        if l:res != []
+            call add(l:results, [l:row, l:res[0], l:res[1]])
         endif
     endfor
     return l:results
@@ -23,13 +32,17 @@ endfunction
 function! SudokuSolver#Solver#ColSolver (ary)
     let l:results = []
     for l:col in range(9)
-        let l:list = map(copy(a:ary), 'v:val['. l:col .']')
-        let l:sum = s:sum(l:list)
-        if l:sum >= 36
-            let l:zero_row = index(l:list, 0)
-            call add(l:results, [l:zero_row, l:col, 45 - l:sum])
+        let l:res = s:line_solver(map(copy(a:ary), 'v:val['. l:col .']'))
+        if l:res != []
+            call add(l:results, [l:res[0], l:col, l:res[1]])
         endif
     endfor
+    return l:results
+endfunction
+
+
+function! SudokuSolver#Solver#BlockSolver (ary)
+    let l:results = []
     return l:results
 endfunction
 
@@ -37,6 +50,7 @@ endfunction
 let s:solvers = [
         \ function('SudokuSolver#Solver#RowSolver'),
         \ function('SudokuSolver#Solver#ColSolver'),
+        \ function('SudokuSolver#Solver#BlockSolver'),
         \ ]
 function! SudokuSolver#Solver#RuleSolver (ary)
     let l:results = []
@@ -52,45 +66,21 @@ endfunction
 
 
 function! SudokuSolver#Solver#solve ()
-    let l:results = SudokuSolver#Solver#RuleSolver(s:sudoku_ary)
-    if type(l:results) != type([])
-    else
-        for l:res in l:results
-            if type(l:res) != type([]) || len(l:res) != 3
-            elseif l:res[0] < 0 || 9 < l:res[0]
-            elseif l:res[1] < 0 || 9 < l:res[1]
-            elseif l:res[2] < 0 || 9 < l:res[2]
-            else
-                let s:sudoku_ary[(l:res[0])][(l:res[1])] = l:res[2]
-                call SudokuSolver#Canvus#draw_number(l:res[0], l:res[1])
-            endif
-        endfor
-    endif
-endfunction
-
-
-function! SudokuSolver#Solver#init ()
-    let s:sudoku_ary = []
-    for l:row in range(9)
-        call add(s:sudoku_ary, [])
-        for l:col in range(9)
-            call add(s:sudoku_ary[(l:row)], 0)
-        endfor
-    endfor
-endfunction
-
-
-function! SudokuSolver#Solver#set_number (row, col, num)
-    let s:sudoku_ary[(a:row)][(a:col)] = a:num
-endfunction
-
-
-function! SudokuSolver#Solver#array (...)
-    if a:0 == 0
-        return s:sudoku_ary
-    elseif a:0 == 1
-        return s:sudoku_ary[(a:1)]
-    elseif a:0 == 2
-        return s:sudoku_ary[(a:1)][(a:2)]
-    endif
+    while v:true
+        let l:results = SudokuSolver#Solver#RuleSolver(SudokuSolver#Sudoku#array())
+        if type(l:results) != type([]) || l:results == []
+            break
+        else
+            for l:res in l:results
+                if type(l:res) != type([]) || len(l:res) != 3
+                elseif l:res[0] < 0 || 9 < l:res[0]
+                elseif l:res[1] < 0 || 9 < l:res[1]
+                elseif l:res[2] < 0 || 9 < l:res[2]
+                else
+                    call SudokuSolver#Sudoku#set_number(l:res[0], l:res[1], l:res[2])
+                    call SudokuSolver#Canvus#draw_number(l:res[0], l:res[1])
+                endif
+            endfor
+        endif
+    endwhile
 endfunction

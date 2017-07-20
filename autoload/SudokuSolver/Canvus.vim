@@ -1,3 +1,14 @@
+function! SudokuSolver#Canvus#init ()
+    let s:sudoku_data = []
+    for l:row in range(9)
+        call add(s:sudoku_data, [])
+        for l:col in range(9)
+            call add(s:sudoku_data[(l:row)], 0)
+        endfor
+    endfor
+endfunction
+
+
 function! SudokuSolver#Canvus#draw_frame ()
     call SudokuSolver#Canvus#alloc_line(19)
 
@@ -23,8 +34,11 @@ function! SudokuSolver#Canvus#draw_frame ()
 endfunction
 
 
-function! SudokuSolver#Canvus#draw_number (row, col)
-    let l:val = SudokuSolver#Sudoku#array(a:row, a:col)
+function! SudokuSolver#Canvus#draw_number (row, col, ...)
+    if a:0 == 1
+        let s:sudoku_data[(a:row)][(a:col)] = a:1
+    endif
+    let l:val = s:sudoku_data[(a:row)][(a:col)]
     let l:cvs_row = (a:row + 1) * 2
     let l:cvs_col = (a:col + 1) * 4 + (a:col > 2 ? 1 : 0) + (a:col > 5 ? 1 : 0)
 
@@ -59,7 +73,10 @@ endfunction
 
 
 function! SudokuSolver#Canvus#draw_cursor (row, col)
-    let l:val = SudokuSolver#Sudoku#array(a:row, a:col)
+    if a:0 == 1
+        let s:sudoku_data[(a:row)][(a:col)] = a:1
+    endif
+    let l:val = s:sudoku_data[(a:row)][(a:col)]
     let l:cvs_row = (a:row + 1) * 2
     let l:cvs_col = (a:col + 1) * 4 + (a:col > 2 ? 1 : 0) + (a:col > 5 ? 1 : 0)
 

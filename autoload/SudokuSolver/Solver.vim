@@ -1,3 +1,14 @@
+function! SudokuSolver#Solver#init ()
+    let s:data = []
+    for l:row in range(9)
+        call add(s:data, [])
+        for l:col in range(9)
+            call add(s:data[(l:row)], 0)
+        endfor
+    endfor
+endfunction
+
+
 function! s:sum (list)
     let l:acc = 0
     for l:i in a:list
@@ -67,7 +78,7 @@ endfunction
 
 function! SudokuSolver#Solver#solve ()
     while v:true
-        let l:results = SudokuSolver#Solver#RuleSolver(SudokuSolver#Sudoku#array())
+        let l:results = SudokuSolver#Solver#RuleSolver(s:data)
         if type(l:results) != type([]) || l:results == []
             break
         else
@@ -77,7 +88,7 @@ function! SudokuSolver#Solver#solve ()
                 elseif l:res[1] < 0 || 9 < l:res[1]
                 elseif l:res[2] < 0 || 9 < l:res[2]
                 else
-                    call SudokuSolver#Sudoku#set_number(l:res[0], l:res[1], l:res[2])
+                    call SudokuSolver#GUI#set_number(l:res[0], l:res[1], l:res[2])
                     call SudokuSolver#Canvus#draw_number(l:res[0], l:res[1])
                 endif
             endfor

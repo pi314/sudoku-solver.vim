@@ -17,8 +17,9 @@ function! s:init ()
     set buftype=nofile
     set filetype=sudoku_solver
 
-    call SudokuSolver#Sudoku#init()
+    call SudokuSolver#Canvus#init()
     call SudokuSolver#GUI#init()
+    call SudokuSolver#Solver#init()
 
     call SudokuSolver#Canvus#canvas_clear()
     call SudokuSolver#Canvus#draw_frame()
@@ -38,7 +39,7 @@ function! s:init ()
     nnoremap <Up>       :call SudokuSolver#GUI#move_cursor_up()<CR>
     nnoremap <Right>    :call SudokuSolver#GUI#move_cursor_right()<CR>
     nnoremap <C-r>      :SudokuSolver<CR>
-    nnoremap <Space>    :call SudokuSolver#Solver#solve()<CR>
+    nnoremap <CR>       :call SudokuSolver#Solver#solve()<CR>
 
     nnoremap 0 :call SudokuSolver#GUI#set_number(0)<CR>
     nnoremap 1 :call SudokuSolver#GUI#set_number(1)<CR>

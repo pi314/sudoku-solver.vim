@@ -15,7 +15,7 @@ function! SudokuSolver#GUI#show_msg ()
     call setline(22, 'Arrow keys: move cursor')
     call setline(23, 'Number keys: set number')
     call setline(24, '<C-r>: reset')
-    call setline(25, '<Space>: start solving')
+    call setline(25, '<CR>: start solving')
     call cursor(26, 0)
 endfunction
 
@@ -55,7 +55,20 @@ function! s:move_cursor (drow, dcol)
 endfunction
 
 
-function! SudokuSolver#GUI#set_number (num)
-    call SudokuSolver#Sudoku#set_number(s:row, s:col, a:num)
-    call SudokuSolver#Canvus#draw_number(s:row, s:col)
+function! SudokuSolver#GUI#set_number (...)
+    if a:0 == 1
+        let l:row = s:row
+        let l:col = s:col
+        let l:num = a:1
+    elseif a:0 == 3
+        let l:row = a:1
+        let l:col = a:2
+        let l:num = a:3
+    endif
+    call SudokuSolver#Canvus#draw_number(l:row, l:col, l:num)
+endfunction
+
+
+function! SudokuSolver#GUI#array (row, col)
+    return s:sudoku_data[(a:row)][(a:col)]
 endfunction

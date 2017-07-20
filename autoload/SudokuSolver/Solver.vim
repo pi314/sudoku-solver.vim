@@ -1,18 +1,24 @@
 function! SudokuSolver#Solver#init ()
-    call s:reset_data()
 endfunction
 
 
-function! s:reset_data ()
-    let s:data = []
+function! s:reset_data (...)
+    let l:data = []
     for l:row in range(9)
-        call add(s:data, [])
+        call add(l:data, [])
         for l:col in range(9)
-            call add(s:data[(l:row)], {
-                        \ 'cand': [1, 2, 3, 4, 5, 6, 7, 8, 9],
-                        \ })
+            if a:0 == 0 || a:1[(l:row)][(l:col)] == 0
+                call add(l:data[(l:row)], {
+                            \ 'cand': [1, 2, 3, 4, 5, 6, 7, 8, 9],
+                            \ })
+            else
+                call add(l:data[(l:row)], {
+                            \ 'cand': [(a:1[(l:row)][(l:col)])],
+                            \ })
+            endif
         endfor
     endfor
+    return l:data
 endfunction
 
 
@@ -98,16 +104,7 @@ endfunction
 
 
 function! SudokuSolver#Solver#solve ()
-    call s:reset_data()
-    let l:user_input_data = SudokuSolver#Canvus#data()
-    for l:row in range(9)
-        for l:col in range(9)
-            if l:user_input_data[(l:row)][(l:col)] != 0
-                let s:data[(l:row)][(l:col)]['cand'] = [l:user_input_data[(l:row)][(l:col)]]
-            endif
-        endfor
-    endfor
-
+    let s:data = s:reset_data(SudokuSolver#Canvus#data())
     while v:true
         let l:results = SudokuSolver#Solver#RuleSolver(s:data)
         if type(l:results) != type([]) || l:results == []

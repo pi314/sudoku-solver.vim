@@ -3,7 +3,10 @@ function! SudokuSolver#Canvus#init ()
     for l:row in range(9)
         call add(s:sudoku_data, [])
         for l:col in range(9)
-            call add(s:sudoku_data[(l:row)], 0)
+            call add(s:sudoku_data[(l:row)], {
+                        \ 'num': 0,
+                        \ 'is_input': 0,
+                        \ })
         endfor
     endfor
 endfunction
@@ -36,9 +39,10 @@ endfunction
 
 function! SudokuSolver#Canvus#draw_number (row, col, ...)
     if a:0 == 1
-        let s:sudoku_data[(a:row)][(a:col)] = a:1
+        let s:sudoku_data[(a:row)][(a:col)]['num'] = a:1
+        let s:sudoku_data[(a:row)][(a:col)]['is_input'] = (a:1 != 0) ? v:true : v:false
     endif
-    let l:val = s:sudoku_data[(a:row)][(a:col)]
+    let l:val = s:sudoku_data[(a:row)][(a:col)]['num']
     let l:cvs_row = (a:row + 1) * 2
     let l:cvs_col = (a:col + 1) * 4 + (a:col > 2 ? 1 : 0) + (a:col > 5 ? 1 : 0)
 
@@ -74,9 +78,9 @@ endfunction
 
 function! SudokuSolver#Canvus#draw_cursor (row, col)
     if a:0 == 1
-        let s:sudoku_data[(a:row)][(a:col)] = a:1
+        let s:sudoku_data[(a:row)][(a:col)]['num'] = a:1
     endif
-    let l:val = s:sudoku_data[(a:row)][(a:col)]
+    let l:val = s:sudoku_data[(a:row)][(a:col)]['num']
     let l:cvs_row = (a:row + 1) * 2
     let l:cvs_col = (a:col + 1) * 4 + (a:col > 2 ? 1 : 0) + (a:col > 5 ? 1 : 0)
 
@@ -104,7 +108,7 @@ function! SudokuSolver#Canvus#data ()
     for l:row in range(9)
         call add(l:data, [])
         for l:col in range(9)
-            call add(l:data[(l:row)], s:sudoku_data[(l:row)][(l:col)])
+            call add(l:data[(l:row)], s:sudoku_data[(l:row)][(l:col)]['num'])
         endfor
     endfor
     return l:data

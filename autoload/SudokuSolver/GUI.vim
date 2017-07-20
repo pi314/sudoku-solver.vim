@@ -67,8 +67,3 @@ function! SudokuSolver#GUI#set_number (...)
     endif
     call SudokuSolver#Canvus#draw_number(l:row, l:col, l:num)
 endfunction
-
-
-function! SudokuSolver#GUI#array (row, col)
-    return s:sudoku_data[(a:row)][(a:col)]
-endfunction

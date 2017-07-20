@@ -97,3 +97,15 @@ function! SudokuSolver#Canvus#draw_cursor (row, col)
                 \ .'#####'.
                 \ strpart(l:line3, l:cvs_col + 2))
 endfunction
+
+
+function! SudokuSolver#Canvus#data ()
+    let l:data = []
+    for l:row in range(9)
+        call add(l:data, [])
+        for l:col in range(9)
+            call add(l:data[(l:row)], s:sudoku_data[(l:row)][(l:col)])
+        endfor
+    endfor
+    return l:data
+endfunction

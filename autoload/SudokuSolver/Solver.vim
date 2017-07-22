@@ -120,7 +120,7 @@ endfunction
 
 
 function! SudokuSolver#Solver#solve ()
-    let s:data = s:reset_data(SudokuSolver#Canvus#data())
+    let s:data = s:reset_data(SudokuSolver#GUI#data())
     while v:true
         let l:results = SudokuSolver#Solver#RuleSolver(s:data)
         if type(l:results) != type([]) || l:results == []

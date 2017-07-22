@@ -17,17 +17,15 @@ function! s:init ()
     set buftype=nofile
     set filetype=sudoku_solver
 
-    call SudokuSolver#Canvus#init()
     call SudokuSolver#GUI#init()
     call SudokuSolver#Solver#init()
 
-    call SudokuSolver#Canvus#canvas_clear()
-    call SudokuSolver#Canvus#draw_frame()
+    call SudokuSolver#GUI#canvas_clear()
+    call SudokuSolver#GUI#draw_frame()
     call SudokuSolver#GUI#show_msg()
-    call SudokuSolver#Canvus#draw_numbers()
+    call SudokuSolver#GUI#draw_numbers()
 
-    let [l:row, l:col] = SudokuSolver#GUI#cursor()
-    call SudokuSolver#Canvus#draw_cursor(l:row, l:col)
+    call SudokuSolver#GUI#draw_cursor()
 
     mapclear <buffer>
     nnoremap h :call SudokuSolver#GUI#move_cursor_left()<CR>

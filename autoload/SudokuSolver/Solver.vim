@@ -81,6 +81,22 @@ endfunction
 
 function! SudokuSolver#Solver#BlockSolver (data)
     let l:results = []
+    for l:row in range(3)
+        for l:col in range(3)
+            let l:line = []
+            for l:i in range(9)
+                call add(l:line, a:data[((l:row * 3) + (l:i / 3))][((l:col * 3) + (l:i % 3))])
+            endfor
+            let l:res = s:line_solver(l:line)
+            if l:res != []
+                call add(l:results, [
+                            \ (l:row * 3) + (l:res[0] / 3),
+                            \ (l:col * 3) + (l:res[0] % 3),
+                            \ l:res[1]
+                            \ ])
+            endif
+        endfor
+    endfor
     return l:results
 endfunction
 

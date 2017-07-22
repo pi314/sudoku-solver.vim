@@ -11,6 +11,28 @@ function! SudokuSolver#GUI#init ()
                         \ })
         endfor
     endfor
+
+    let l:test_data = [
+                \ '104963850',
+                \ '280104903',
+                \ '396085074',
+                \ '417300285',
+                \ '508407306',
+                \ '639020417',
+                \ '740639028',
+                \ '802701609',
+                \ '063852740',
+                \ ]
+    let s:sudoku_data = []
+    for l:row in range(9)
+        call add(s:sudoku_data, [])
+        for l:col in range(9)
+            call add(s:sudoku_data[(l:row)], {
+                        \ 'num': str2nr(l:test_data[(l:row)][(l:col)]),
+                        \ 'is_input': v:true,
+                        \ })
+        endfor
+    endfor
 endfunction
 
 
@@ -20,13 +42,14 @@ endfunction
 
 
 function! SudokuSolver#GUI#show_msg ()
-    call SudokuSolver#GUI#alloc_line(26)
+    call SudokuSolver#GUI#alloc_line(27)
     call setline(21, 'h/j/k/l: move cursor')
     call setline(22, 'Arrow keys: move cursor')
     call setline(23, 'Number keys: set number')
     call setline(24, '<C-r>: reset')
-    call setline(25, '<CR>: start solving')
-    call cursor(26, 0)
+    call setline(25, '<CR>: solve')
+    call setline(26, '<Space>: unsolve')
+    call cursor(27, 0)
 endfunction
 
 
@@ -67,9 +90,11 @@ endfunction
 
 function! SudokuSolver#GUI#set_number (...)
     if a:0 == 1
+        " Called from GUI
         let l:row = s:row
         let l:col = s:col
         let l:num = a:1
+        let s:sudoku_data[(l:row)][(l:col)]['is_input'] = v:true
     elseif a:0 == 3
         let l:row = a:1
         let l:col = a:2
@@ -173,4 +198,31 @@ function! SudokuSolver#GUI#data ()
         endfor
     endfor
     return l:data
+endfunction
+
+
+function! SudokuSolver#GUI#solve ()
+    for l:row in range(9)
+        for l:col in range(9)
+            if s:sudoku_data[(l:row)][(l:col)]['num'] != 0
+                let s:sudoku_data[(l:row)][(l:col)]['is_input'] = v:true
+            else
+                let s:sudoku_data[(l:row)][(l:col)]['is_input'] = v:false
+            endif
+        endfor
+    endfor
+    call SudokuSolver#GUI#draw_numbers()
+    call SudokuSolver#Solver#solve()
+endfunction
+
+
+function! SudokuSolver#GUI#unsolve ()
+    for l:row in range(9)
+        for l:col in range(9)
+            if s:sudoku_data[(l:row)][(l:col)]['is_input'] == v:false
+                let s:sudoku_data[(l:row)][(l:col)]['num'] = 0
+            endif
+        endfor
+    endfor
+    call SudokuSolver#GUI#draw_numbers()
 endfunction

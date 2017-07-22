@@ -34,6 +34,10 @@ function! s:init ()
     nnoremap j :call SudokuSolver#GUI#move_cursor_down()<CR>
     nnoremap k :call SudokuSolver#GUI#move_cursor_up()<CR>
     nnoremap l :call SudokuSolver#GUI#move_cursor_right()<CR>
+    nnoremap H :call SudokuSolver#GUI#move_cursor_left(3)<CR>
+    nnoremap J :call SudokuSolver#GUI#move_cursor_down(3)<CR>
+    nnoremap K :call SudokuSolver#GUI#move_cursor_up(3)<CR>
+    nnoremap L :call SudokuSolver#GUI#move_cursor_right(3)<CR>
     nnoremap <Left>     :call SudokuSolver#GUI#move_cursor_left()<CR>
     nnoremap <Down>     :call SudokuSolver#GUI#move_cursor_down()<CR>
     nnoremap <Up>       :call SudokuSolver#GUI#move_cursor_up()<CR>

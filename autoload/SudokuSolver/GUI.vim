@@ -20,23 +20,23 @@ function! SudokuSolver#GUI#show_msg ()
 endfunction
 
 
-function SudokuSolver#GUI#move_cursor_left ()
-    call s:move_cursor(0, -1)
+function SudokuSolver#GUI#move_cursor_left (...)
+    call s:move_cursor(0, -1 * (a:0 == 1 ? a:1 : 1))
 endfunction
 
 
-function SudokuSolver#GUI#move_cursor_down ()
-    call s:move_cursor(1, 0)
+function SudokuSolver#GUI#move_cursor_down (...)
+    call s:move_cursor(1 * (a:0 == 1 ? a:1 : 1), 0)
 endfunction
 
 
-function SudokuSolver#GUI#move_cursor_up ()
-    call s:move_cursor(-1, 0)
+function SudokuSolver#GUI#move_cursor_up (...)
+    call s:move_cursor(-1 * (a:0 == 1 ? a:1 : 1), 0)
 endfunction
 
 
-function SudokuSolver#GUI#move_cursor_right ()
-    call s:move_cursor(0, 1)
+function SudokuSolver#GUI#move_cursor_right (...)
+    call s:move_cursor(0, 1 * (a:0 == 1 ? a:1 : 1))
 endfunction
 
 

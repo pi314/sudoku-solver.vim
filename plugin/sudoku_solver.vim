@@ -18,7 +18,6 @@ function! s:init ()
     set filetype=sudoku_solver
 
     call SudokuSolver#GUI#init()
-    call SudokuSolver#Solver#init()
 
     call SudokuSolver#GUI#canvas_clear()
     call SudokuSolver#GUI#draw_frame()

@@ -1,7 +1,4 @@
 function! s:line_filter (line)
-    let l:sum = 0
-    let l:zero_idx = -1
-
     let l:idx = 0
     for l:idx in range(9)
         let l:item = a:line[(l:idx)]
@@ -46,7 +43,7 @@ let s:filters = [
         \ function('SudokuSolver#RuleSolver#ColFilter'),
         \ function('SudokuSolver#RuleSolver#BlockFilter'),
         \ ]
-function! SudokuSolver#RuleSolver#RuleSolver (data)
+function! SudokuSolver#RuleSolver#MainRuleSolver (data)
     let l:results = []
     for Filter in s:filters
         call Filter(a:data)

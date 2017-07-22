@@ -1,7 +1,3 @@
-function! SudokuSolver#Solver#init ()
-endfunction
-
-
 function! s:item ()
     let item = {}
     let item._confirmed = v:false
@@ -41,6 +37,13 @@ function! s:item ()
         endif
     endfunction
 
+    function! item.keep_only (num)
+        if has_key(self._candidates, a:num)
+            let self._candidates = {}
+            let self._candidates[(a:num)] = v:true
+        endif
+    endfunction
+
     function! item.set_num (num)
         let self._candidates = {}
         let self._candidates[(a:num)] = v:true
@@ -68,9 +71,10 @@ endfunction
 
 
 let s:solvers = [
-            \ function('SudokuSolver#RuleSolver#RuleSolver'),
+            \ function('SudokuSolver#RuleSolver#MainRuleSolver'),
+            \ function('SudokuSolver#CandidateSolver#MainCandidateSolver'),
             \ ]
-function! SudokuSolver#Solver#solve ()
+function! SudokuSolver#MainSolver#solve ()
     let s:data = s:reset_data(SudokuSolver#GUI#data())
     while v:true
         let l:results = []

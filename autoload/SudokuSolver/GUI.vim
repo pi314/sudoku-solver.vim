@@ -212,7 +212,7 @@ function! SudokuSolver#GUI#solve ()
         endfor
     endfor
     call SudokuSolver#GUI#draw_numbers()
-    call SudokuSolver#Solver#solve()
+    call SudokuSolver#MainSolver#solve()
 endfunction
 
 

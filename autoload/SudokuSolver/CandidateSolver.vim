@@ -1,13 +1,8 @@
 function! s:line_candidate_solver (line)
-    let l:uniq_idx = -1
-
-    echom string(map(copy(a:line), 'v:val.val()'))
     for l:num in range(1, 9)
-        echom '================================='
-        echom 'Checking '. l:num
+        let l:uniq_idx = -1
         for l:idx in range(9)
             let l:item = a:line[(l:idx)]
-            echom l:idx .' '. string(l:item)
             if l:item.has_candidate(l:num)
                 if l:uniq_idx == -1
                     let l:uniq_idx = l:idx
@@ -19,10 +14,8 @@ function! s:line_candidate_solver (line)
         endfor
 
         if l:uniq_idx != -1 && !(a:line[(l:uniq_idx)].given()) && !(a:line[(l:uniq_idx)].confirmed())
-            echom l:uniq_idx .' is '. l:num
             call a:line[(l:uniq_idx)].keep_only(l:num)
         endif
-        echom '================================='
     endfor
 endfunction
 
@@ -73,6 +66,5 @@ function! SudokuSolver#CandidateSolver#MainCandidateSolver (data)
             endif
         endfor
     endfor
-    echom string(a:data[8][0])
     return l:results
 endfunction

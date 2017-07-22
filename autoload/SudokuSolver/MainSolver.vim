@@ -98,5 +98,4 @@ function! SudokuSolver#MainSolver#solve ()
             endfor
         endif
     endwhile
-    " echom string(s:data[8][0])
 endfunction

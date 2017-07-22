@@ -2,20 +2,65 @@ function! SudokuSolver#Solver#init ()
 endfunction
 
 
+function! s:item ()
+    let item = {}
+    let item._confirmed = v:false
+    let item._given = v:false
+    let item._candidates = {}
+
+    for l:i in range(1, 9)
+        let item._candidates[(l:i)] = v:true
+    endfor
+
+    function! item.confirmed (...)
+        if a:0 == 1 && type(a:1) == type(v:true)
+            let self._confirmed = a:1
+        endif
+        return self._confirmed
+    endfunction
+
+    function! item.given ()
+        return self._given
+    endfunction
+
+    function! item.val ()
+        if len(self._candidates) == 1
+            return str2nr(keys(self._candidates)[0])
+        else
+            return 0
+        endif
+    endfunction
+
+    function! item.has_candidate (num)
+        return has_key(self._candidates, a:num)
+    endfunction
+
+    function! item.remove (num)
+        if has_key(self._candidates, a:num)
+            unlet! self._candidates[(a:num)]
+        endif
+    endfunction
+
+    function! item.set_num (num)
+        let self._candidates = {}
+        let self._candidates[(a:num)] = v:true
+        let self._given = v:true
+    endfunction
+
+    return item
+endfunction
+
+
 function! s:reset_data (...)
     let l:data = []
     for l:row in range(9)
         call add(l:data, [])
         for l:col in range(9)
-            if a:0 == 0 || a:1[(l:row)][(l:col)] == 0
-                call add(l:data[(l:row)], {
-                            \ 'cand': [1, 2, 3, 4, 5, 6, 7, 8, 9],
-                            \ })
-            else
-                call add(l:data[(l:row)], {
-                            \ 'cand': [(a:1[(l:row)][(l:col)])],
-                            \ })
+            let l:item = s:item()
+            if a:0 != 0 && a:1[(l:row)][(l:col)] != 0
+                call l:item.set_num(a:1[(l:row)][(l:col)])
             endif
+            call add(l:data[(l:row)], l:item)
         endfor
     endfor
     return l:data
@@ -31,87 +76,65 @@ function! s:sum (list)
 endfunction
 
 
-function! s:line_solver (line)
+function! s:line_filter (line)
     let l:sum = 0
     let l:zero_idx = -1
 
     let l:idx = 0
     for l:idx in range(9)
-        if len(a:line[(l:idx)]['cand']) == 1
-            let l:sum += a:line[(l:idx)]['cand'][0]
-        else
-            if l:zero_idx == -1
-                let l:zero_idx = l:idx
-            else
-                return []
-            endif
+        let l:item = a:line[(l:idx)]
+        if l:item.val()
+            for l:i in filter(range(9), 'v:val != '. l:idx)
+                call a:line[(l:i)].remove(l:item.val())
+            endfor
         endif
     endfor
-
-    if l:sum >= 36 && l:zero_idx >= 0 && index(a:line[(l:zero_idx)]['cand'], 45 - l:sum) != -1
-        return [l:zero_idx, 45 - l:sum]
-    endif
-    return []
 endfunction
 
 
-function! SudokuSolver#Solver#RowSolver (data)
-    let l:results = []
+function! SudokuSolver#Solver#RowFilter (data)
     for l:row in range(9)
-        let l:res = s:line_solver(a:data[(l:row)])
-        if l:res != []
-            call add(l:results, [l:row, l:res[0], l:res[1]])
-        endif
+        call s:line_filter(a:data[(l:row)])
     endfor
-    return l:results
 endfunction
 
 
-function! SudokuSolver#Solver#ColSolver (data)
-    let l:results = []
+function! SudokuSolver#Solver#ColFilter (data)
     for l:col in range(9)
-        let l:res = s:line_solver(map(copy(a:data), 'v:val['. l:col .']'))
-        if l:res != []
-            call add(l:results, [l:res[0], l:col, l:res[1]])
-        endif
+        call s:line_filter(map(copy(a:data), 'v:val['. l:col .']'))
     endfor
-    return l:results
 endfunction
 
 
-function! SudokuSolver#Solver#BlockSolver (data)
-    let l:results = []
+function! SudokuSolver#Solver#BlockFilter (data)
     for l:row in range(3)
         for l:col in range(3)
             let l:line = []
             for l:i in range(9)
                 call add(l:line, a:data[((l:row * 3) + (l:i / 3))][((l:col * 3) + (l:i % 3))])
             endfor
-            let l:res = s:line_solver(l:line)
-            if l:res != []
-                call add(l:results, [
-                            \ (l:row * 3) + (l:res[0] / 3),
-                            \ (l:col * 3) + (l:res[0] % 3),
-                            \ l:res[1]
-                            \ ])
-            endif
+            call s:line_filter(l:line)
         endfor
     endfor
-    return l:results
 endfunction
 
 
-let s:solvers = [
-        \ function('SudokuSolver#Solver#RowSolver'),
-        \ function('SudokuSolver#Solver#ColSolver'),
-        \ function('SudokuSolver#Solver#BlockSolver'),
+let s:filters = [
+        \ function('SudokuSolver#Solver#RowFilter'),
+        \ function('SudokuSolver#Solver#ColFilter'),
+        \ function('SudokuSolver#Solver#BlockFilter'),
         \ ]
 function! SudokuSolver#Solver#RuleSolver (data)
     let l:results = []
-    for Solver in s:solvers
-        for l:res in Solver(a:data)
-            if l:res != []
-                call add(l:results, l:res)
+    for Filter in s:filters
+        call Filter(a:data)
+    endfor
+
+    for l:row in range(9)
+        for l:col in range(9)
+            let l:item = a:data[(l:row)][(l:col)]
+            if !(l:item.given()) && !(l:item.confirmed()) && l:item.val() != 0
+                call add(l:results, [l:row, l:col, a:data[(l:row)][(l:col)].val()])
             endif
         endfor
     endfor
@@ -132,7 +155,8 @@ function! SudokuSolver#Solver#solve ()
                 elseif l:res[1] < 0 || 9 < l:res[1]
                 elseif l:res[2] < 0 || 9 < l:res[2]
                 else
-                    let s:data[(l:res[0])][(l:res[1])]['cand'] = [(l:res[2])]
+                    let l:item = s:data[(l:res[0])][(l:res[1])]
+                    call l:item.confirmed(v:true)
                     call SudokuSolver#GUI#set_number(l:res[0], l:res[1], l:res[2])
                 endif
             endfor

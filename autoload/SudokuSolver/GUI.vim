@@ -1,6 +1,11 @@
+let s:STATE_IDLE = 'STATE_IDLE'
+let s:STATE_SOLVING = 'STATE_SOLVING'
+
+
 function! SudokuSolver#GUI#init ()
     let s:row = 0
     let s:col = 0
+    let s:state = s:STATE_IDLE
     let s:sudoku_data = []
     for l:row in range(9)
         call add(s:sudoku_data, [])
@@ -42,14 +47,15 @@ endfunction
 
 
 function! SudokuSolver#GUI#show_msg ()
-    call SudokuSolver#GUI#alloc_line(27)
+    call SudokuSolver#GUI#alloc_line(28)
     call setline(21, 'h/j/k/l: move cursor')
     call setline(22, 'Arrow keys: move cursor')
     call setline(23, 'Number keys: set number')
     call setline(24, '<C-r>: reset')
-    call setline(25, '<CR>: solve')
-    call setline(26, '<Space>: unsolve')
-    call cursor(27, 0)
+    call setline(25, 's: solve one number')
+    call setline(26, 'S: solve all')
+    call setline(27, '<Space>: unsolve')
+    call cursor(28, 0)
 endfunction
 
 
@@ -202,6 +208,7 @@ endfunction
 
 
 function! SudokuSolver#GUI#solve ()
+    call SudokuSolver#GUI#unsolve()
     for l:row in range(9)
         for l:col in range(9)
             if s:sudoku_data[(l:row)][(l:col)]['num'] != 0
@@ -216,7 +223,26 @@ function! SudokuSolver#GUI#solve ()
 endfunction
 
 
+function! SudokuSolver#GUI#solve_one ()
+    if s:state == s:STATE_IDLE
+        for l:row in range(9)
+            for l:col in range(9)
+                if s:sudoku_data[(l:row)][(l:col)]['num'] != 0
+                    let s:sudoku_data[(l:row)][(l:col)]['is_input'] = v:true
+                else
+                    let s:sudoku_data[(l:row)][(l:col)]['is_input'] = v:false
+                endif
+            endfor
+        endfor
+        call SudokuSolver#GUI#draw_numbers()
+        let s:state = s:STATE_SOLVING
+    endif
+    call SudokuSolver#MainSolver#solve_one()
+endfunction
+
+
 function! SudokuSolver#GUI#unsolve ()
+    let s:state = s:STATE_IDLE
     for l:row in range(9)
         for l:col in range(9)
             if s:sudoku_data[(l:row)][(l:col)]['is_input'] == v:false

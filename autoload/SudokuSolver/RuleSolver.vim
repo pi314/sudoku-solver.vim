@@ -43,7 +43,7 @@ let s:filters = [
         \ function('SudokuSolver#RuleSolver#ColFilter'),
         \ function('SudokuSolver#RuleSolver#BlockFilter'),
         \ ]
-function! SudokuSolver#RuleSolver#MainRuleSolver (data)
+function! SudokuSolver#RuleSolver#solve (data)
     let l:results = []
     for Filter in s:filters
         call Filter(a:data)
@@ -58,4 +58,20 @@ function! SudokuSolver#RuleSolver#MainRuleSolver (data)
         endfor
     endfor
     return l:results
+endfunction
+
+
+function! SudokuSolver#RuleSolver#solve_one (data)
+    for Filter in s:filters
+        call Filter(a:data)
+    endfor
+
+    for l:row in range(9)
+        for l:col in range(9)
+            let l:item = a:data[(l:row)][(l:col)]
+            if !(l:item.given()) && !(l:item.confirmed()) && l:item.val() != 0
+                return [l:row, l:col, a:data[(l:row)][(l:col)].val()]
+            endif
+        endfor
+    endfor
 endfunction

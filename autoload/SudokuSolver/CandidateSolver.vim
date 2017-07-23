@@ -52,7 +52,7 @@ let s:candidate_solvers = [
             \ function('SudokuSolver#CandidateSolver#ColCandidateSolver'),
             \ function('SudokuSolver#CandidateSolver#BlockCandidateSolver'),
             \ ]
-function! SudokuSolver#CandidateSolver#MainCandidateSolver (data)
+function! SudokuSolver#CandidateSolver#solve (data)
     let l:results = []
     for CandidateSolver in s:candidate_solvers
         call CandidateSolver(a:data)
@@ -68,3 +68,20 @@ function! SudokuSolver#CandidateSolver#MainCandidateSolver (data)
     endfor
     return l:results
 endfunction
+
+
+function! SudokuSolver#CandidateSolver#solve_one (data)
+    for CandidateSolver in s:candidate_solvers
+        call CandidateSolver(a:data)
+    endfor
+
+    for l:row in range(9)
+        for l:col in range(9)
+            let l:item = a:data[(l:row)][(l:col)]
+            if !(l:item.given()) && !(l:item.confirmed()) && l:item.val() != 0
+                return [l:row, l:col, a:data[(l:row)][(l:col)].val()]
+            endif
+        endfor
+    endfor
+endfunction
+

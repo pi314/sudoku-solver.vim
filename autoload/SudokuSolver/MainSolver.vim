@@ -1,3 +1,12 @@
+let s:STATE_IDLE = 'STATE_IDLE'
+let s:STATE_SOLVING = 'STATE_SOLVING'
+
+
+function! SudokuSolver#MainSolver#init ()
+    let s:state = s:STATE_IDLE
+endfunction
+
+
 function! s:item ()
     let item = {}
     let item._confirmed = v:false
@@ -71,31 +80,31 @@ endfunction
 
 
 let s:solvers = [
-            \ function('SudokuSolver#RuleSolver#MainRuleSolver'),
-            \ function('SudokuSolver#CandidateSolver#MainCandidateSolver'),
+            \ 'SudokuSolver#RuleSolver',
+            \ 'SudokuSolver#CandidateSolver',
             \ ]
 function! SudokuSolver#MainSolver#solve ()
-    let s:data = s:reset_data(SudokuSolver#GUI#data())
-    while v:true
-        let l:results = []
-        for Solver in s:solvers
-            let l:res = Solver(s:data)
-            call extend(l:results, l:res)
-        endfor
-        if type(l:results) != type([]) || l:results == []
-            break
-        else
-            for l:res in l:results
-                if type(l:res) != type([]) || len(l:res) != 3
-                elseif l:res[0] < 0 || 9 < l:res[0]
-                elseif l:res[1] < 0 || 9 < l:res[1]
-                elseif l:res[2] < 0 || 9 < l:res[2]
-                else
-                    let l:item = s:data[(l:res[0])][(l:res[1])]
-                    call l:item.confirmed(v:true)
-                    call SudokuSolver#GUI#set_number(l:res[0], l:res[1], l:res[2])
-                endif
-            endfor
-        endif
+    let s:continue = v:true
+    while s:continue
+        let s:continue = SudokuSolver#MainSolver#solve_one()
     endwhile
+endfunction
+
+
+function! SudokuSolver#MainSolver#solve_one ()
+    let s:data = s:reset_data(SudokuSolver#GUI#data())
+    for s:solver in s:solvers
+        let l:res = function(s:solver .'#solve_one')(s:data)
+        if type(l:res) != type([]) || len(l:res) != 3
+        elseif l:res[0] < 0 || 9 < l:res[0]
+        elseif l:res[1] < 0 || 9 < l:res[1]
+        elseif l:res[2] < 0 || 9 < l:res[2]
+        else
+            let l:item = s:data[(l:res[0])][(l:res[1])]
+            call l:item.confirmed(v:true)
+            call SudokuSolver#GUI#set_number(l:res[0], l:res[1], l:res[2])
+            return v:true
+        endif
+    endfor
+    return v:false
 endfunction

@@ -43,6 +43,7 @@ function! s:init ()
     nnoremap <C-r>      :SudokuSolver<CR>
     nnoremap s          :call SudokuSolver#GUI#solve_one()<CR>
     nnoremap S          :call SudokuSolver#GUI#solve()<CR>
+    nnoremap <Plug>s    :call SudokuSolver#GUI#solve_loop()<CR>
     nnoremap <Space>    :call SudokuSolver#GUI#unsolve()<CR>
 
     nnoremap 0 :call SudokuSolver#GUI#set_number(0)<CR>

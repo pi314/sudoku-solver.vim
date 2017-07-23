@@ -1,6 +1,8 @@
 let s:STATE_IDLE = 'STATE_IDLE'
 let s:STATE_SOLVING = 'STATE_SOLVING'
 
+let s:is_looping = v:false
+
 
 function! SudokuSolver#GUI#init ()
     let s:row = 0
@@ -19,17 +21,17 @@ function! SudokuSolver#GUI#init ()
     endfor
 
     let l:test_data = [
-                \ '005280000',
-                \ '000004100',
-                \ '009000403',
-                \ '900700060',
-                \ '080010040',
-                \ '050009001',
-                \ '406000200',
-                \ '007400000',
-                \ '000025600',
+                \ '000008001',
+                \ '000600007',
+                \ '009010035',
+                \ '000070060',
+                \ '021000340',
+                \ '050080000',
+                \ '530040100',
+                \ '800003000',
+                \ '600200000',
                 \ ]
-    call s:inject_test_data(l:test_data)
+    " call s:inject_test_data(l:test_data)
 endfunction
 
 
@@ -77,6 +79,10 @@ endfunction
 
 
 function! s:move_cursor (drow, dcol)
+    if s:is_looping
+        return
+    endif
+
     if 0 <= s:row + a:drow && s:row + a:drow <= 8
         let s:row += a:drow
     endif
@@ -104,6 +110,7 @@ function! SudokuSolver#GUI#set_number (...)
         let l:num = a:3
     endif
     let s:sudoku_data[(l:row)][(l:col)]['num'] = l:num
+    let s:sudoku_data[(l:row)][(l:col)]['is_hypo'] = v:false
     call SudokuSolver#GUI#draw_number(l:row, l:col)
 endfunction
 
@@ -221,17 +228,24 @@ endfunction
 
 function! SudokuSolver#GUI#solve ()
     call SudokuSolver#GUI#unsolve()
-    for l:row in range(9)
-        for l:col in range(9)
-            if s:sudoku_data[(l:row)][(l:col)]['num'] != 0
-                let s:sudoku_data[(l:row)][(l:col)]['is_input'] = v:true
-            else
-                let s:sudoku_data[(l:row)][(l:col)]['is_input'] = v:false
-            endif
-        endfor
-    endfor
+    call SudokuSolver#GUI#draw_frame()
     call SudokuSolver#GUI#draw_numbers()
-    call SudokuSolver#MainSolver#solve()
+    let s:is_looping = v:true
+    call feedkeys("\<Plug>s")
+endfunction
+
+
+function! SudokuSolver#GUI#solve_loop ()
+    if getchar(1)
+        " This slows down the loop
+    endif
+
+    if SudokuSolver#GUI#solve_one()
+        call feedkeys("\<Plug>s")
+    else
+        call SudokuSolver#GUI#draw_cursor()
+        let s:is_looping = v:false
+    endif
 endfunction
 
 
@@ -249,7 +263,7 @@ function! SudokuSolver#GUI#solve_one ()
         call SudokuSolver#GUI#draw_numbers()
         let s:state = s:STATE_SOLVING
     endif
-    call SudokuSolver#MainSolver#solve_one()
+    return SudokuSolver#MainSolver#solve_one()
 endfunction
 
 

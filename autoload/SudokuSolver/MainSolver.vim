@@ -4,6 +4,7 @@ let s:STATE_SOLVING = 'STATE_SOLVING'
 
 function! SudokuSolver#MainSolver#reset ()
     let s:state = s:STATE_IDLE
+    let s:hypo_stack = []
 endfunction
 
 
@@ -34,6 +35,10 @@ function! s:item ()
         else
             return 0
         endif
+    endfunction
+
+    function! item.candidates ()
+        return self._candidates
     endfunction
 
     function! item.has_candidate (num)
@@ -98,6 +103,7 @@ endfunction
 function! SudokuSolver#MainSolver#solve_one ()
     if s:state == s:STATE_IDLE
         let s:data = s:reset_data(SudokuSolver#GUI#data())
+        let s:hypo_stack = []
         let s:state = s:STATE_SOLVING
     endif
 
@@ -110,9 +116,68 @@ function! SudokuSolver#MainSolver#solve_one ()
         else
             let l:item = s:data[(l:res[0])][(l:res[1])]
             call l:item.confirmed(v:true)
-            call SudokuSolver#GUI#set_number(l:res[0], l:res[1], l:res[2])
+            if len(s:hypo_stack) == 0
+                call SudokuSolver#GUI#set_number(l:res[0], l:res[1], l:res[2])
+            else
+                call SudokuSolver#GUI#hypo_number(l:res[0], l:res[1], l:res[2])
+                call add(s:hypo_stack[0]['followers'], [(l:res[0]), (l:res[1])])
+            endif
             return v:true
         endif
     endfor
+
+    " No solution found, either need to add a hypo or remove a hypo
+    let l:conflict_count = 0
+    let l:confirmed_count = 0
+    let l:unsolved_count = 0
+    let l:hypo_row = -1
+    let l:hypo_col = -1
+    let l:hypo_num = -1
+    for l:row in range(9)
+        for l:col in range(9)
+            let l:item = s:data[(l:row)][(l:col)]
+            if l:item.given() || l:item.confirmed()
+                let l:confirmed_count += 1
+                continue
+            endif
+
+            if len(l:item.candidates()) == 0
+                let l:conflict_count += 1
+            else
+                if l:hypo_row == -1
+                    let l:hypo_row = l:row
+                    let l:hypo_col = l:col
+                    let l:hypo_num = str2nr(keys(l:item.candidates())[0])
+                endif
+                let l:unsolved_count += 1
+            endif
+        endfor
+    endfor
+
+    if l:conflict_count != 0
+        let l:hypo = remove(s:hypo_stack, 0)
+        let s:data = l:hypo['data']
+        let l:point = l:hypo['point']
+        let l:item = s:data[(l:point[0])][(l:point[1])]
+        call l:item.remove(l:point[2])
+        call SudokuSolver#GUI#set_number(l:point[0], l:point[1], 0)
+        for l:follower in l:hypo['followers']
+            call SudokuSolver#GUI#set_number(l:follower[0], l:follower[1], 0)
+        endfor
+        return v:true
+
+    elseif l:confirmed_count != 81
+        let l:hypo = {}
+        let l:hypo['point'] = [(l:hypo_row), (l:hypo_col), (l:hypo_num)]
+        let l:hypo['data'] = deepcopy(s:data)
+        let l:hypo['followers'] = []
+        call insert(s:hypo_stack, l:hypo, 0)
+        let l:item = s:data[(l:hypo_row)][(l:hypo_col)]
+        call l:item.keep_only(l:hypo_num)
+        call l:item.confirmed(v:true)
+        call SudokuSolver#GUI#hypo_number((l:hypo_row), (l:hypo_col), (l:hypo_num))
+        return v:true
+    endif
+
     return v:false
 endfunction

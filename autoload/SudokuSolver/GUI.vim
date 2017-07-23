@@ -12,7 +12,8 @@ function! SudokuSolver#GUI#init ()
         for l:col in range(9)
             call add(s:sudoku_data[(l:row)], {
                         \ 'num': 0,
-                        \ 'is_input': 0,
+                        \ 'is_input': v:false,
+                        \ 'is_hypo': v:false,
                         \ })
         endfor
     endfor
@@ -35,17 +36,10 @@ endfunction
 function! s:inject_test_data (test_data)
     for l:row in range(9)
         for l:col in range(9)
-            let s:sudoku_data[(l:row)][(l:col)] = {
-                        \ 'num': str2nr(a:test_data[(l:row)][(l:col)]),
-                        \ 'is_input': v:true,
-                        \ }
+            let s:sudoku_data[(l:row)][(l:col)]['num'] = str2nr(a:test_data[(l:row)][(l:col)])
+            let s:sudoku_data[(l:row)][(l:col)]['is_input'] = v:true
         endfor
     endfor
-endfunction
-
-
-function! SudokuSolver#GUI#cursor ()
-    return [s:row, s:col]
 endfunction
 
 
@@ -114,6 +108,13 @@ function! SudokuSolver#GUI#set_number (...)
 endfunction
 
 
+function! SudokuSolver#GUI#hypo_number (row, col, num)
+    let s:sudoku_data[(a:row)][(a:col)]['num'] = a:num
+    let s:sudoku_data[(a:row)][(a:col)]['is_hypo'] = v:true
+    call SudokuSolver#GUI#draw_number(a:row, a:col)
+endfunction
+
+
 function! SudokuSolver#GUI#draw_frame ()
     call SudokuSolver#GUI#alloc_line(19)
 
@@ -142,14 +143,22 @@ endfunction
 function! SudokuSolver#GUI#draw_number (row, col)
     let l:val = s:sudoku_data[(a:row)][(a:col)]['num']
     let l:is_input = s:sudoku_data[(a:row)][(a:col)]['is_input']
+    let l:is_hypo = s:sudoku_data[(a:row)][(a:col)]['is_hypo']
     let l:cvs_row = (a:row + 1) * 2
     let l:cvs_col = (a:col + 1) * 4 + (a:col > 2 ? 1 : 0) + (a:col > 5 ? 1 : 0)
 
     let l:line = getline(l:cvs_row)
+    if l:is_input
+        let l:wrapper = ' '
+    elseif l:is_hypo
+        let l:wrapper = ';'
+    else
+        let l:wrapper = '_'
+    endif
 
     call setline(l:cvs_row,
                 \ strpart(l:line, 0, l:cvs_col - 2)
-                \ . (l:is_input ? ' ' : '_') . (l:val ? l:val : ' ') . (l:is_input ? ' ' : '_') .
+                \ . (l:wrapper) . (l:val ? l:val : ' ') . (l:wrapper) .
                 \ strpart(l:line, l:cvs_col + 1))
 endfunction
 

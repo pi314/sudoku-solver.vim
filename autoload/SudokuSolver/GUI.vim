@@ -28,14 +28,17 @@ function! SudokuSolver#GUI#init ()
                 \ '007400000',
                 \ '000025600',
                 \ ]
-    let s:sudoku_data = []
+    call s:inject_test_data(l:test_data)
+endfunction
+
+
+function! s:inject_test_data (test_data)
     for l:row in range(9)
-        call add(s:sudoku_data, [])
         for l:col in range(9)
-            call add(s:sudoku_data[(l:row)], {
-                        \ 'num': str2nr(l:test_data[(l:row)][(l:col)]),
+            let s:sudoku_data[(l:row)][(l:col)] = {
+                        \ 'num': str2nr(a:test_data[(l:row)][(l:col)]),
                         \ 'is_input': v:true,
-                        \ })
+                        \ }
         endfor
     endfor
 endfunction
@@ -243,6 +246,8 @@ endfunction
 
 function! SudokuSolver#GUI#unsolve ()
     let s:state = s:STATE_IDLE
+    call SudokuSolver#MainSolver#reset()
+
     for l:row in range(9)
         for l:col in range(9)
             if s:sudoku_data[(l:row)][(l:col)]['is_input'] == v:false

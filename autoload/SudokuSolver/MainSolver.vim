@@ -2,7 +2,7 @@ let s:STATE_IDLE = 'STATE_IDLE'
 let s:STATE_SOLVING = 'STATE_SOLVING'
 
 
-function! SudokuSolver#MainSolver#init ()
+function! SudokuSolver#MainSolver#reset ()
     let s:state = s:STATE_IDLE
 endfunction
 

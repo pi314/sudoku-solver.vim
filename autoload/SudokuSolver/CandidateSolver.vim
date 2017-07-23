@@ -84,4 +84,3 @@ function! SudokuSolver#CandidateSolver#solve_one (data)
         endfor
     endfor
 endfunction
-

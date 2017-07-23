@@ -84,15 +84,23 @@ let s:solvers = [
             \ 'SudokuSolver#CandidateSolver',
             \ ]
 function! SudokuSolver#MainSolver#solve ()
+    let s:state = s:STATE_IDLE
+
     let s:continue = v:true
     while s:continue
         let s:continue = SudokuSolver#MainSolver#solve_one()
     endwhile
+
+    let s:state = s:STATE_IDLE
 endfunction
 
 
 function! SudokuSolver#MainSolver#solve_one ()
-    let s:data = s:reset_data(SudokuSolver#GUI#data())
+    if s:state == s:STATE_IDLE
+        let s:data = s:reset_data(SudokuSolver#GUI#data())
+        let s:state = s:STATE_SOLVING
+    endif
+
     for s:solver in s:solvers
         let l:res = function(s:solver .'#solve_one')(s:data)
         if type(l:res) != type([]) || len(l:res) != 3

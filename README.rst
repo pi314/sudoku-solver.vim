@@ -1,10 +1,9 @@
 ===============================================================================
-sudoku-solver.vim
+sudoku.vim
 ===============================================================================
-To start:
 
-.. code:: vim
+A Sudoku Editor / Solver. (A rewrite of https://github.com/pi314/sudoku-solver.vim)
 
-    :SudokuSolver
+To start: ::
 
-.. image:: tty.gif
+  :Sudoku

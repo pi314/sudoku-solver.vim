@@ -9,8 +9,8 @@ function! s:init ()
     set filetype=sudoku
     set colorcolumn=
 
-    call SudokuGUI#init()
     call SudokuBoard#init()
+    call SudokuGUI#init()
 
 endfunction
 

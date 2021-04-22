@@ -1,5 +1,8 @@
+" SudokuGUI: handles everything related to user interface
+
+
 let s:cursor = [0, 0]
-let s:pencil_color = 'white'
+let s:pencil_color = SudokuBoard#WHITE
 
 let s:sudoku_buffer = []
 
@@ -11,8 +14,8 @@ let s:menu_items = [
             \ '0     :  Clear number at cursor',
             \ '',
             \ 'c : Switch between pencil colors',
-            \ ['s:render_menu_item_pencil_color', ['white']],
-            \ ['s:render_menu_item_pencil_color', ['cyan']],
+            \ ['s:render_menu_item_pencil_color', [SudokuBoard#WHITE]],
+            \ ['s:render_menu_item_pencil_color', [SudokuBoard#PENCIAL]],
             \ '',
             \ 'Arrow keys : Move cursor',
             \ 'h/j/k/l :    Move cursor',
@@ -29,20 +32,22 @@ let s:menu_items = [
 
 
 function! s:switch_to_next_pencil_color ()
-    if s:pencil_color == 'white'
-        let s:pencil_color = 'cyan'
-    elseif s:pencil_color == 'cyan'
-        let s:pencil_color = 'white'
+    if s:pencil_color == g:SudokuBoard#WHITE
+        let s:pencil_color = g:SudokuBoard#PENCIAL
+
+    elseif s:pencil_color == g:SudokuBoard#PENCIAL
+        let s:pencil_color = g:SudokuBoard#WHITE
+
     endif
     call SudokuGUI#render_all()
 endfunction
 
 
 function! s:render_menu_item_pencil_color (color)
-    if a:color == 'white'
-        return '    ('. (s:pencil_color == 'white' ? 'O' : ' ') .') white - quiz preset'
-    elseif a:color == 'cyan'
-        return '    ('. (s:pencil_color == 'cyan' ? 'O' : ' ') .') {cyan}cyan{end} - your pencil'
+    if a:color == g:SudokuBoard#WHITE
+        return '    ('. (s:pencil_color == g:SudokuBoard#WHITE ? 'O' : ' ') .') white - quiz preset'
+    elseif a:color == g:SudokuBoard#PENCIAL
+        return '    ('. (s:pencil_color == g:SudokuBoard#PENCIAL ? 'O' : ' ') .') {cyan}cyan{end} - your pencil'
     endif
 endfunction
 
@@ -72,14 +77,22 @@ function! s:render_sudoku_grid ()
 
     let l:pencil_color_tag = '{' . s:pencil_color . '}'
 
-    let l:ret[(s:cursor[0]*2)][(s:cursor[1]*2)] = l:pencil_color_tag . '┏' . '{end}'
-    let l:ret[(s:cursor[0]*2)][(s:cursor[1]*2+1)] = l:pencil_color_tag . '━━━' . '{end}'
-    let l:ret[(s:cursor[0]*2)][(s:cursor[1]*2+2)] = l:pencil_color_tag . '┓' . '{end}'
-    let l:ret[(s:cursor[0]*2+1)][(s:cursor[1]*2)] = l:pencil_color_tag . '┃' . '{end}'
-    let l:ret[(s:cursor[0]*2+1)][(s:cursor[1]*2+2)] = l:pencil_color_tag . '┃' . '{end}'
-    let l:ret[(s:cursor[0]*2+2)][(s:cursor[1]*2)] = l:pencil_color_tag . '┗' . '{end}'
-    let l:ret[(s:cursor[0]*2+2)][(s:cursor[1]*2+1)] = l:pencil_color_tag . '━━━' . '{end}'
-    let l:ret[(s:cursor[0]*2+2)][(s:cursor[1]*2+2)] = l:pencil_color_tag . '┛' . '{end}'
+    if s:pencil_color == g:SudokuBoard#WHITE
+        let l:color_tag = '{white}'
+
+    elseif s:pencil_color == g:SudokuBoard#PENCIAL
+        let l:color_tag = '{cyan}'
+
+    endif
+
+    let l:ret[(s:cursor[0]*2)][(s:cursor[1]*2)] = l:color_tag . '┏' . '{end}'
+    let l:ret[(s:cursor[0]*2)][(s:cursor[1]*2+1)] = l:color_tag . '━━━' . '{end}'
+    let l:ret[(s:cursor[0]*2)][(s:cursor[1]*2+2)] = l:color_tag . '┓' . '{end}'
+    let l:ret[(s:cursor[0]*2+1)][(s:cursor[1]*2)] = l:color_tag . '┃' . '{end}'
+    let l:ret[(s:cursor[0]*2+1)][(s:cursor[1]*2+2)] = l:color_tag . '┃' . '{end}'
+    let l:ret[(s:cursor[0]*2+2)][(s:cursor[1]*2)] = l:color_tag . '┗' . '{end}'
+    let l:ret[(s:cursor[0]*2+2)][(s:cursor[1]*2+1)] = l:color_tag . '━━━' . '{end}'
+    let l:ret[(s:cursor[0]*2+2)][(s:cursor[1]*2+2)] = l:color_tag . '┛' . '{end}'
 
     return l:ret
 endfunction

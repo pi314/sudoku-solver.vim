@@ -1,13 +1,35 @@
 highlight clear
 
-syntax match  SudokuGrid  /\v[═║╔╦╗╠╬╣╚╩╝│─┌┬┐├┼┤└┴┘]/
-highlight def SudokuGrid  ctermfg=DarkGray
+syntax match  SudokuGrid  /═/
+syntax match  SudokuGrid  /║/
+syntax match  SudokuGrid  /╔/
+syntax match  SudokuGrid  /╦/
+syntax match  SudokuGrid  /╗/
+syntax match  SudokuGrid  /╠/
+syntax match  SudokuGrid  /╬/
+syntax match  SudokuGrid  /╣/
+syntax match  SudokuGrid  /╚/
+syntax match  SudokuGrid  /╩/
+syntax match  SudokuGrid  /╝/
+syntax match  SudokuGrid  /│/
+syntax match  SudokuGrid  /─/
+syntax match  SudokuGrid  /┌/
+syntax match  SudokuGrid  /┬/
+syntax match  SudokuGrid  /┐/
+syntax match  SudokuGrid  /├/
+syntax match  SudokuGrid  /┼/
+syntax match  SudokuGrid  /┤/
+syntax match  SudokuGrid  /└/
+syntax match  SudokuGrid  /┴/
+syntax match  SudokuGrid  /┘/
+highlight     SudokuGrid  ctermfg=DarkGray
 
 syntax match  SudokuColorMark    /\V{white}/ conceal
 syntax match  SudokuColorMark    /\V{cyan}/ conceal
 syntax match  SudokuColorMark    /\V{end}/ conceal
-syntax match  SudokuCyanColoredText  /\v(\V{cyan}\v)@<=([^}]*)(\V{end}\v)@=/
-highlight def SudokuCyanColoredText  ctermfg=DarkCyan
 
-syntax match  SudokuWhiteColoredText  /\v(\V{white}\v)@<=([^}]*)(\V{end}\v)@=/
-highlight def SudokuWhiteColoredText  ctermfg=LightGray
+syntax region SudokuCyanColoredText  matchgroup=SudokuColorMark start=/\V{cyan}/ end=/\V{end}/ concealends contains=SudokuColorMark
+highlight     SudokuCyanColoredText  ctermfg=DarkCyan
+
+syntax region SudokuWhiteColoredText  matchgroup=SudokuColorMark start=/\V{white}/ end=/\V{end}/ concealends contains=SudokuColorMark
+highlight     SudokuWhiteColoredText  ctermfg=LightGray

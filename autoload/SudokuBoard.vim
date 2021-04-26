@@ -8,16 +8,12 @@ let s:board = []
 
 
 function! SudokuBoard#init ()
-    echom 'SudokuBoard#init()'
     for l:row in range(9)
         call add(s:board, [])
         for l:col in range(9)
             call add(s:board[(l:row)], {'num': 0, 'color': 'white'})
         endfor
     endfor
-
-    echom 'SudokuBoard#init() done'
-
 endfunction
 
 

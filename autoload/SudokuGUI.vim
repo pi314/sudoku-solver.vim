@@ -2,11 +2,11 @@
 
 
 let s:cursor = [0, 0]
-let s:pencil_color = SudokuBoard#WHITE
+let s:pencil_color = g:SUDOKU_COLOR_WHITE
 
 let s:color_map = {
-            \ SudokuBoard#WHITE: 'white',
-            \ SudokuBoard#PENCIL: 'cyan',
+            \ g:SUDOKU_COLOR_WHITE: 'white',
+            \ g:SUDOKU_COLOR_PENCIL: 'cyan',
             \ }
 
 let s:grid_data = [
@@ -38,8 +38,8 @@ let s:menu_items = [
             \ 'x     :  Clear number at cursor',
             \ '',
             \ 'c : Switch between pencil colors',
-            \ ['s:render_menu_item_pencil_color', [SudokuBoard#WHITE]],
-            \ ['s:render_menu_item_pencil_color', [SudokuBoard#PENCIL]],
+            \ ['s:render_menu_item_pencil_color', [g:SUDOKU_COLOR_WHITE]],
+            \ ['s:render_menu_item_pencil_color', [g:SUDOKU_COLOR_PENCIL]],
             \ '',
             \ 'Arrow keys : Move cursor',
             \ 'h/j/k/l :    Move cursor',
@@ -53,31 +53,31 @@ let s:menu_items = [
 
 
 function! s:switch_to_next_pencil_color ()
-    if s:pencil_color == g:SudokuBoard#WHITE
-        let s:pencil_color = g:SudokuBoard#PENCIL
+    if s:pencil_color == g:SUDOKU_COLOR_WHITE
+        let s:pencil_color = g:SUDOKU_COLOR_PENCIL
 
-    elseif s:pencil_color == g:SudokuBoard#PENCIL
-        let s:pencil_color = g:SudokuBoard#WHITE
+    elseif s:pencil_color == g:SUDOKU_COLOR_PENCIL
+        let s:pencil_color = g:SUDOKU_COLOR_WHITE
 
     endif
-    call SudokuGUI#render_all()
+    call s:render_all()
 endfunction
 
 
 function! s:render_menu_item_pencil_color (color)
-    if a:color == g:SudokuBoard#WHITE
-        return '    ('. (s:pencil_color == g:SudokuBoard#WHITE ? 'O' : ' ') .') white - setup quiz'
-    elseif a:color == g:SudokuBoard#PENCIL
-        return '    ('. (s:pencil_color == g:SudokuBoard#PENCIL ? 'O' : ' ') .') {cyan}cyan{end} - your pencil'
+    if a:color == g:SUDOKU_COLOR_WHITE
+        return '    ('. (s:pencil_color == g:SUDOKU_COLOR_WHITE ? 'O' : ' ') .') white - setup quiz'
+    elseif a:color == g:SUDOKU_COLOR_PENCIL
+        return '    ('. (s:pencil_color == g:SUDOKU_COLOR_PENCIL ? 'O' : ' ') .') {cyan}cyan{end} - your pencil'
     endif
 endfunction
 
 
 function! s:render_sudoku_grid (lnum)
-    if s:pencil_color == g:SudokuBoard#WHITE
+    if s:pencil_color == g:SUDOKU_COLOR_WHITE
         let l:color_tag = '{white}'
 
-    elseif s:pencil_color == g:SudokuBoard#PENCIL
+    elseif s:pencil_color == g:SUDOKU_COLOR_PENCIL
         let l:color_tag = '{cyan}'
 
     endif
@@ -134,7 +134,7 @@ function! SudokuGUI#render_line (lnum)
 endfunction
 
 
-function! SudokuGUI#render_all ()
+function! s:render_all ()
     for l:lnum in range(19)
         call setline(l:lnum + 1, join(s:render_sudoku_grid(l:lnum), ''))
     endfor
@@ -214,5 +214,5 @@ function! SudokuGUI#init ()
 
     call s:alloc_line(len(s:grid_data) + 1 + len(s:menu_items))
 
-    call SudokuGUI#render_all()
+    call s:render_all()
 endfunction

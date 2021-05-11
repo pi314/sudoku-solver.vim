@@ -1,27 +1,39 @@
 highlight clear
 
-syntax match  SudokuGrid  /═/
-syntax match  SudokuGrid  /║/
 syntax match  SudokuGrid  /╔/
-syntax match  SudokuGrid  /╦/
-syntax match  SudokuGrid  /╗/
+syntax match  SudokuGrid  /║/
 syntax match  SudokuGrid  /╠/
-syntax match  SudokuGrid  /╬/
-syntax match  SudokuGrid  /╣/
+syntax match  SudokuGrid  /╟/
 syntax match  SudokuGrid  /╚/
-syntax match  SudokuGrid  /╩/
-syntax match  SudokuGrid  /╝/
+
+syntax match  SudokuGrid  /╤/
 syntax match  SudokuGrid  /│/
-syntax match  SudokuGrid  /─/
-syntax match  SudokuGrid  /┌/
-syntax match  SudokuGrid  /┬/
-syntax match  SudokuGrid  /┐/
-syntax match  SudokuGrid  /├/
+syntax match  SudokuGrid  /╪/
 syntax match  SudokuGrid  /┼/
-syntax match  SudokuGrid  /┤/
+syntax match  SudokuGrid  /╧/
+
+syntax match  SudokuGrid  /╦/
+syntax match  SudokuGrid  /╫/
+syntax match  SudokuGrid  /╬/
+syntax match  SudokuGrid  /╩/
+
+syntax match  SudokuGrid  /╗/
+syntax match  SudokuGrid  /╣/
+syntax match  SudokuGrid  /╢/
+syntax match  SudokuGrid  /╝/
+
+syntax match  SudokuGrid  /═/
+syntax match  SudokuGrid  /─/
+
+syntax match  SudokuGrid  /┌/
+syntax match  SudokuGrid  /├/
 syntax match  SudokuGrid  /└/
+syntax match  SudokuGrid  /┬/
 syntax match  SudokuGrid  /┴/
+syntax match  SudokuGrid  /┐/
+syntax match  SudokuGrid  /┤/
 syntax match  SudokuGrid  /┘/
+
 highlight     SudokuGrid  ctermfg=DarkGray
 
 syntax match  SudokuColorMark    /\V{white}/ conceal
